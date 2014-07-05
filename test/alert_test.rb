@@ -3,7 +3,7 @@ require 'eyecare/alert'
 
 describe Eyecare::Alert do
   let(:config) do
-    { message: 'Blink blink', timeout: 20 }
+    { message: 'Blink blink', timeout: 40 }
   end
 
   it 'is defaulted is when no config' do
