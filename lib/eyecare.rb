@@ -31,7 +31,9 @@ module Eyecare
     def config
       return @config if @config
       config_file = File.expand_path('~/.eyecare')
-      @config = Config.load_from_file(config_file)
+      if File.file?(config_file)
+        @config = Config.load_from_file(config_file)
+      end
     end
   end
 
