@@ -1,0 +1,6 @@
+#! /usr/bin/env ruby
+
+require 'eyecare'
+
+# runs as daemon
+Eyecare::run!
