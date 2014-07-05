@@ -4,26 +4,16 @@ TODO: Write a gem description
 
 ## Installation
 
-Add this line to your application's Gemfile:
-
-    gem 'eyecare'
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
-
     $ gem install eyecare
 
 ## Usage
 
-TODO: Write usage instructions here
+    $ eyecare
 
-## Contributing
+Create a config file ~/.eyecare.
+    
+Config options are:
 
-1. Fork it ( http://github.com/craescu/eyecare/fork )
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Add some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create new Pull Request
+    alert.message = 'Your message here'
+    alert.timeout = 20 # timeout in seconds
+    alert.interval = 20 * 60 # show up every 20 minutes

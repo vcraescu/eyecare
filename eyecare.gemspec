@@ -7,7 +7,7 @@ Gem::Specification.new do |spec|
   spec.name          = "eyecare"
   spec.version       = Eyecare::VERSION
   spec.authors       = ["Viorel Craescu"]
-  spec.email         = ["viorel@syntetik.com"]
+  spec.email         = ["viorel@craescu.com"]
   spec.summary       = %q{Protect your eyes}
   spec.description   = %q{Protect your eyes}
   spec.homepage      = ""
