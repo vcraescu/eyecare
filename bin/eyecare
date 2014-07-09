@@ -3,4 +3,12 @@
 require 'eyecare'
 
 # runs as daemon
-Eyecare::run!
+command = ARGV.shift
+command ||= 'start'
+
+if command == 'start'
+  Eyecare.run
+else
+  Eyecare.stop
+end
+
