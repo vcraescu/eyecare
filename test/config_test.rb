@@ -7,6 +7,7 @@ describe Eyecare::Config do
     config[:alert][:message].must_equal Eyecare::Config::DEFAULTS[:alert][:message]
     config[:alert][:timeout].must_equal Eyecare::Config::DEFAULTS[:alert][:timeout]
     config[:alert][:interval].must_equal Eyecare::Config::DEFAULTS[:alert][:interval]
+    config[:alert][:pid_file].must_equal Eyecare::Config::DEFAULTS[:alert][:pid_file]
   end
 
   let(:config_text) do
@@ -15,6 +16,7 @@ describe Eyecare::Config do
         message: 'This is a test message'
         timeout: 40
         interval: 1800
+        pid_file: /path/to/my/pid/file.pid
     "
   end
 
@@ -24,6 +26,7 @@ describe Eyecare::Config do
     config[:alert][:message].must_equal 'This is a test message'
     config[:alert][:timeout].must_equal 40
     config[:alert][:interval].must_equal 30 * 60
+    config[:alert][:pid_file].must_equal '/path/to/my/pid/file.pid'
   end
 
   it 'is empty' do
@@ -48,6 +51,6 @@ describe Eyecare::Config do
     config[:alert][:message].must_equal 'This is a test message'
     config[:alert][:timeout].must_equal 40
     config[:alert][:interval].must_equal 30 * 60
+    config[:alert][:pid_file].must_equal '/path/to/my/pid/file.pid'
   end
 end
-

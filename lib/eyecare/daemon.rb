@@ -1,6 +1,8 @@
 module Eyecare
   class Daemon
     attr_accessor :pid_file
+    attr_accessor :out
+    attr_accessor :err
 
     def initialize(options = {})
       options = Hash[pid_file: options] if options.is_a?(String)
@@ -29,7 +31,7 @@ module Eyecare
         puts e.message
       end
 
-      puts 'OK'
+      puts "OK\n"
       yield
     end
 

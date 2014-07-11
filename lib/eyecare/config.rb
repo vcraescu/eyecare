@@ -16,8 +16,10 @@ module Eyecare
       alert: {
         message: 'Look away',
         timeout: 20,
-        interval: 20 * 60
-      }
+        interval: 20 * 60,
+      },
+
+      pid_file: File.expand_path(File.join('.eyecare', 'eyecare.pid'), '~')
     }
 
     def initialize(options = {})

@@ -6,6 +6,8 @@ module Eyecare
     include Singleton
     attr_accessor :message
     attr_accessor :timeout
+    attr_accessor :start_beep_path
+    attr_accessor :end_beep_path
 
     DEFAULT_MESSAGE = 'Look away'
     DEFAULT_TIMEOUT = 20
@@ -13,6 +15,8 @@ module Eyecare
     def init(options = {})
       @message = options.fetch(:message, DEFAULT_MESSAGE)
       @timeout = options.fetch(:timeout, DEFAULT_TIMEOUT)
+      @start_beep_path = options.fetch(:start_beep_file, File.join(Eyecare::AUDIOS_PATH, 'beep_start.wav'))
+      @end_beep_path = options.fetch(:end_beep_file, File.join(Eyecare::AUDIOS_PATH, 'beep_end.wav'))
       self
     end
 
@@ -32,25 +36,21 @@ module Eyecare
     end
 
     def beep_start
-      play_audio('beep_start.wav')
+      play_audio(start_beep_path)
     end
 
     def beep_end
-      play_audio('beep_end.wav')
+      play_audio(end_beep_path)
     end
 
     def play_audio(filename)
-      audio_path = File.join(Eyecare::AUDIOS_PATH, filename)
-      pid = spawn("aplay #{audio_path} > /dev/null 2>&1")
+      pid = spawn("aplay #{filename} > /dev/null 2>&1")
       Process.detach(pid)
     end
 
     def run_after(timeout, &block)
-      pid = fork do
-        sleep(timeout)
-        yield
-      end
-      Process.detach(pid)
+      sleep(timeout)
+      yield
     end
 
     def notification
@@ -64,6 +64,3 @@ module Eyecare
     end
   end
 end
-
-#puts Eyecare::ASSETS_PATH
-#Eyecare::Alert.new.show

@@ -8,11 +8,13 @@ module Eyecare
   ASSETS_PATH = File.expand_path(File.join(File.dirname(__FILE__), 'eyecare', 'assets'))
   IMAGES_PATH = File.join(ASSETS_PATH, 'images')
   AUDIOS_PATH = File.join(ASSETS_PATH, 'audios')
-  PID_FILE = File.expand_path(File.join('.eyecare', 'eyecare.pid'), '~')
+  @config_path = File.expand_path('~/.eyecare/config.yml')
 
   class << self
+    attr_reader :config_path
+
     def run
-      Daemon.start(PID_FILE) do 
+      Daemon.start(config[:pid_file]) do 
         while true
           sleep(config[:alert][:interval])
           alert.show
@@ -21,7 +23,7 @@ module Eyecare
     end
 
     def stop
-      Daemon.stop(PID_FILE)
+      Daemon.stop(config[:pid_file])
     end
 
     def alert
@@ -30,13 +32,9 @@ module Eyecare
 
     def config
       return @config if @config
-      config_file = File.expand_path('~/.eyecare')
-      begin
-        @config = Config.load_from_file(config_file)
-      rescue
-      end
 
-      @config ||= Config.new
+      config_file = File.expand_path(config_path)
+      @config = Config.load_from_file(config_file) rescue Config.new
     end
   end
 end
