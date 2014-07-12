@@ -7,7 +7,7 @@ describe Eyecare::Config do
     config[:alert][:message].must_equal Eyecare::Config::DEFAULTS[:alert][:message]
     config[:alert][:timeout].must_equal Eyecare::Config::DEFAULTS[:alert][:timeout]
     config[:alert][:interval].must_equal Eyecare::Config::DEFAULTS[:alert][:interval]
-    config[:alert][:pid_file].must_equal Eyecare::Config::DEFAULTS[:alert][:pid_file]
+    config[:pid_file].must_equal Eyecare::Config::DEFAULTS[:pid_file]
   end
 
   let(:config_text) do
@@ -16,7 +16,37 @@ describe Eyecare::Config do
         message: 'This is a test message'
         timeout: 40
         interval: 1800
-        pid_file: /path/to/my/pid/file.pid
+      pid_file: /path/to/my/pid/file.pid
+    "
+  end
+
+  let(:friendly_config_text) do
+    %"
+      alert:
+        message: 'This is a test message'
+        timeout: 30 seconds
+        interval: 50 minutes
+      pid_file: /path/to/my/pid/file.pid
+    "
+  end
+
+  let(:friendly_config_text_wrong) do
+    %"
+      alert:
+        message: 'This is a test message'
+        timeout: test
+        interval: blah
+      pid_file: /path/to/my/pid/file.pid
+    "
+  end
+
+  let(:config_text_missing_values) do
+    %"
+      alert:
+        message: 'This is a test message'
+        timeout: 
+        interval: 
+      pid_file: /path/to/my/pid/file.pid
     "
   end
 
@@ -26,7 +56,7 @@ describe Eyecare::Config do
     config[:alert][:message].must_equal 'This is a test message'
     config[:alert][:timeout].must_equal 40
     config[:alert][:interval].must_equal 30 * 60
-    config[:alert][:pid_file].must_equal '/path/to/my/pid/file.pid'
+    config[:pid_file].must_equal '/path/to/my/pid/file.pid'
   end
 
   it 'is empty' do
@@ -51,6 +81,27 @@ describe Eyecare::Config do
     config[:alert][:message].must_equal 'This is a test message'
     config[:alert][:timeout].must_equal 40
     config[:alert][:interval].must_equal 30 * 60
-    config[:alert][:pid_file].must_equal '/path/to/my/pid/file.pid'
+    config[:pid_file].must_equal '/path/to/my/pid/file.pid'
+  end
+
+  it 'friendly config is parsed correctly' do
+    config = Eyecare::Config.load_from_text(friendly_config_text)
+    config[:alert][:message].must_equal 'This is a test message'
+    config[:alert][:interval].must_equal 60 * 50
+    config[:alert][:timeout].must_equal 30
+  end
+
+  it 'friendly config is has wrong values' do
+    config = Eyecare::Config.load_from_text(friendly_config_text_wrong)
+    config[:alert][:message].must_equal 'This is a test message'
+    config[:alert][:interval].must_equal Eyecare::Config::DEFAULTS[:alert][:interval]
+    config[:alert][:timeout].must_equal Eyecare::Config::DEFAULTS[:alert][:timeout]
+  end
+
+  it 'has missing values' do
+    config = Eyecare::Config.load_from_text(config_text_missing_values)
+    config[:alert][:message].must_equal 'This is a test message'
+    config[:alert][:interval].must_equal Eyecare::Config::DEFAULTS[:alert][:interval]
+    config[:alert][:timeout].must_equal Eyecare::Config::DEFAULTS[:alert][:timeout]
   end
 end

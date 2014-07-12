@@ -1,4 +1,5 @@
 require 'yaml'
+require 'chronic_duration'
 
 module Eyecare
 
@@ -24,7 +25,11 @@ module Eyecare
 
     def initialize(options = {})
       @options = DEFAULTS
-      @options.merge!(options.symbolize_keys) if options.respond_to?(:symbolize_keys)
+      if options.respond_to?(:symbolize_keys)
+        options = options.symbolize_keys
+        options = parse_duration_values(options)
+        @options.merge!(options)
+      end
     end
 
     def self.load_from_file(filename)
@@ -37,6 +42,18 @@ module Eyecare
 
     def [](key)
       @options[key]
+    end
+
+    private
+    def parse_duration_values(options)
+      return options unless options.is_a?(Hash)
+      if options[:alert].is_a?(Hash)
+        [:interval, :timeout].each do |k|
+          options[:alert][k] = ChronicDuration.parse(options[:alert][k]) if options[:alert][k].is_a?(String)
+          options[:alert][k] = options[:alert][k].to_i
+        end
+      end
+      options
     end
   end
 end
