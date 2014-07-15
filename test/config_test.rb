@@ -7,6 +7,8 @@ describe Eyecare::Config do
     config[:alert][:message].must_equal Eyecare::Config::DEFAULTS[:alert][:message]
     config[:alert][:timeout].must_equal Eyecare::Config::DEFAULTS[:alert][:timeout]
     config[:alert][:interval].must_equal Eyecare::Config::DEFAULTS[:alert][:interval]
+    config[:alert][:beep][:start].must_equal Eyecare::Config::DEFAULTS[:alert][:beep][:start]
+    config[:alert][:beep][:end].must_equal Eyecare::Config::DEFAULTS[:alert][:beep][:end]
     config[:pid_file].must_equal Eyecare::Config::DEFAULTS[:pid_file]
   end
 
@@ -16,6 +18,9 @@ describe Eyecare::Config do
         message: 'This is a test message'
         timeout: 40
         interval: 1800
+        beep:
+          start: /path/to/beep/start.wav
+          end: /path/to/beep/end.wav
       pid_file: /path/to/my/pid/file.pid
     "
   end
@@ -26,6 +31,9 @@ describe Eyecare::Config do
         message: 'This is a test message'
         timeout: 30 seconds
         interval: 50 minutes
+        beep:
+          start: /path/to/beep/start.wav
+          end: /path/to/beep/end.wav
       pid_file: /path/to/my/pid/file.pid
     "
   end
@@ -36,6 +44,9 @@ describe Eyecare::Config do
         message: 'This is a test message'
         timeout: test
         interval: blah
+        beep:
+          start: /path/to/beep/start.wav
+          end: /path/to/beep/end.wav
       pid_file: /path/to/my/pid/file.pid
     "
   end
@@ -46,6 +57,9 @@ describe Eyecare::Config do
         message: 'This is a test message'
         timeout: 
         interval: 
+        beep:
+          start: /path/to/beep/start.wav
+          end: /path/to/beep/end.wav
       pid_file: /path/to/my/pid/file.pid
     "
   end
@@ -56,6 +70,8 @@ describe Eyecare::Config do
     config[:alert][:message].must_equal 'This is a test message'
     config[:alert][:timeout].must_equal 40
     config[:alert][:interval].must_equal 30 * 60
+    config[:alert][:beep][:start].must_equal '/path/to/beep/start.wav'
+    config[:alert][:beep][:end].must_equal '/path/to/beep/end.wav'
     config[:pid_file].must_equal '/path/to/my/pid/file.pid'
   end
 
@@ -81,6 +97,8 @@ describe Eyecare::Config do
     config[:alert][:message].must_equal 'This is a test message'
     config[:alert][:timeout].must_equal 40
     config[:alert][:interval].must_equal 30 * 60
+    config[:alert][:beep][:start].must_equal '/path/to/beep/start.wav'
+    config[:alert][:beep][:end].must_equal '/path/to/beep/end.wav'
     config[:pid_file].must_equal '/path/to/my/pid/file.pid'
   end
 
@@ -89,6 +107,8 @@ describe Eyecare::Config do
     config[:alert][:message].must_equal 'This is a test message'
     config[:alert][:interval].must_equal 60 * 50
     config[:alert][:timeout].must_equal 30
+    config[:alert][:beep][:start].must_equal '/path/to/beep/start.wav'
+    config[:alert][:beep][:end].must_equal '/path/to/beep/end.wav'
   end
 
   it 'friendly config is has wrong values' do

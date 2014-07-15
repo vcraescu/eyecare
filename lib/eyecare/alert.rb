@@ -1,29 +1,52 @@
 require 'libnotify'
 require 'singleton'
+require 'eyecare/config'
 
 module Eyecare
   class Alert
     include Singleton
     attr_accessor :message
     attr_accessor :timeout
-    attr_accessor :start_beep_path
-    attr_accessor :end_beep_path
+    attr_accessor :beep
 
-    DEFAULT_MESSAGE = 'Look away'
-    DEFAULT_TIMEOUT = 20
+    DEFAULT_MESSAGE = Config::DEFAULTS[:alert][:message]
+    DEFAULT_TIMEOUT = Config::DEFAULTS[:alert][:timeout]
+    DEFAULT_BEEP_START = File.join(Config::AUDIOS_PATH, 'beep_start.wav')
+    DEFAULT_BEEP_END = File.join(Config::AUDIOS_PATH, 'beep_end.wav')
+
+    class Beep
+      attr_accessor :start
+      attr_accessor :end
+
+      def initialize(options = {})
+        @start = Eyecare::Audio.new(options[:start])
+        @end = Eyecare::Audio.new(options[:end])
+      end
+
+      def play(name)
+        self.send(name).play if [:start, :end].include?(name)
+      end
+    end
 
     def init(options = {})
       @message = options.fetch(:message, DEFAULT_MESSAGE)
       @timeout = options.fetch(:timeout, DEFAULT_TIMEOUT)
-      @start_beep_path = options.fetch(:start_beep_file, File.join(Eyecare::AUDIOS_PATH, 'beep_start.wav'))
-      @end_beep_path = options.fetch(:end_beep_file, File.join(Eyecare::AUDIOS_PATH, 'beep_end.wav'))
+
+      beep_start = DEFAULT_BEEP_START
+      beep_end = DEFAULT_BEEP_END
+      if options[:beep]
+        beep_start = options[:beep][:start] if options[:beep][:start]
+        beep_end = options[:beep][:end] if options[:beep][:end]
+      end
+
+      @beep = Beep.new(start: beep_start, end: beep_end)
       self
     end
 
     def show
-      beep_start
+      beep.play(:start)
       notification.show!
-      run_after(self.timeout) { beep_end }
+      run_after(self.timeout) { beep.play(:end) }
     end
 
     private
@@ -33,19 +56,6 @@ module Eyecare
 
     def icon_path
       File.join(Eyecare::IMAGES_PATH, 'eyecare.png')
-    end
-
-    def beep_start
-      play_audio(start_beep_path)
-    end
-
-    def beep_end
-      play_audio(end_beep_path)
-    end
-
-    def play_audio(filename)
-      pid = spawn("aplay #{filename} > /dev/null 2>&1")
-      Process.detach(pid)
     end
 
     def run_after(timeout, &block)

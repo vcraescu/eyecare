@@ -1,13 +1,11 @@
 require "eyecare/version"
 require 'eyecare/alert'
+require 'eyecare/audio'
 require 'eyecare/config'
-require 'fileutils'
 require 'eyecare/daemon'
+require 'fileutils'
 
 module Eyecare
-  ASSETS_PATH = File.expand_path(File.join(File.dirname(__FILE__), 'eyecare', 'assets'))
-  IMAGES_PATH = File.join(ASSETS_PATH, 'images')
-  AUDIOS_PATH = File.join(ASSETS_PATH, 'audios')
   @config_path = File.expand_path('~/.eyecare/config.yml')
 
   class << self
