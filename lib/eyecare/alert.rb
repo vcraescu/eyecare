@@ -55,7 +55,7 @@ module Eyecare
     end
 
     def icon_path
-      File.join(Eyecare::IMAGES_PATH, 'eyecare.png')
+      File.join(Config::IMAGES_PATH, 'eyecare.png')
     end
 
     def run_after(timeout, &block)
