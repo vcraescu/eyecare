@@ -8,11 +8,13 @@ module Eyecare
     attr_accessor :message
     attr_accessor :timeout
     attr_accessor :beep
+    attr_accessor :icon_path
 
     DEFAULT_MESSAGE = Config::DEFAULTS[:alert][:message]
     DEFAULT_TIMEOUT = Config::DEFAULTS[:alert][:timeout]
     DEFAULT_BEEP_START = File.join(Config::AUDIOS_PATH, 'beep_start.wav')
     DEFAULT_BEEP_END = File.join(Config::AUDIOS_PATH, 'beep_end.wav')
+    DEFAULT_ICON_PATH = Config::DEFAULTS[:alert][:icon]
 
     class Beep
       attr_accessor :start
@@ -31,6 +33,7 @@ module Eyecare
     def init(options = {})
       @message = options.fetch(:message, DEFAULT_MESSAGE)
       @timeout = options.fetch(:timeout, DEFAULT_TIMEOUT)
+      @icon_path = options.fetch(:icon, DEFAULT_ICON_PATH)
 
       beep_start = DEFAULT_BEEP_START
       beep_end = DEFAULT_BEEP_END
@@ -54,10 +57,6 @@ module Eyecare
       self.init
     end
 
-    def icon_path
-      File.join(Config::IMAGES_PATH, 'eyecare.png')
-    end
-
     def run_after(timeout, &block)
       sleep(timeout)
       yield
@@ -65,7 +64,7 @@ module Eyecare
 
     def notification
       Libnotify.new do |s|
-        s.summary = 'Eye Care'
+        s.summary = 'Eyecare'
         s.body = self.message
         s.timeout = self.timeout
         s.urgency = :normal
