@@ -1,5 +1,6 @@
 require 'yaml'
 require 'chronic_duration'
+require 'eyecare'
 
 module Eyecare
 
@@ -13,11 +14,20 @@ module Eyecare
   end
 
   class Config
+    ASSETS_PATH = File.expand_path(File.join(File.dirname(__FILE__), 'assets'))
+    IMAGES_PATH = File.join(ASSETS_PATH, 'images')
+    AUDIOS_PATH = File.join(ASSETS_PATH, 'audios')
+
     DEFAULTS = {
       alert: {
         message: 'Look away',
         timeout: 20,
         interval: 20 * 60,
+        icon: File.join(IMAGES_PATH, 'eyecare.png'),
+        beep: {
+          start: File.join(AUDIOS_PATH, 'beep_start.wav'),
+          end: File.join(AUDIOS_PATH, 'beep_end.wav')
+        }
       },
 
       pid_file: File.expand_path(File.join('.eyecare', 'eyecare.pid'), '~')
