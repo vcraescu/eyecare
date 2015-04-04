@@ -23,10 +23,10 @@ Create a config file ~/.eyecare/config.yml
 Config options are:
 
     alert:
-      message: 'Yor message here'
-      timeout: 20 seconds
-      interval: 20 minutes
-      icon: /path/to/icon.png
+      message: 'Your message here'
+      timeout: '20 seconds'
+      interval: '20 minutes'
+      icon: '/path/to/icon.png'
       beep:
         start: /path/to/audio.wav
         end: /path/to/audio.wav
