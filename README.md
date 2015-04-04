@@ -2,7 +2,6 @@
 
 Reminds you to look away to avoid computer eye strain.
 It is recommended to look away from your screen for 20 seconds every 20 minutes.
-This might only work on Ubuntu!
 
 ## Installation
 
