@@ -4,7 +4,12 @@ require 'tempfile'
 describe Eyecare do
   describe 'config' do
     it 'is default if config file is missing' do
-      config = Eyecare.config
+      stub = Eyecare.dup
+      stub.instance_eval do
+        @config_path = ''
+      end
+
+      config = stub.config
       config[:alert][:message].wont_be_empty
       config[:alert][:message].must_equal Eyecare::Config::DEFAULTS[:alert][:message]
       config[:alert][:timeout].must_equal Eyecare::Config::DEFAULTS[:alert][:timeout]
@@ -14,7 +19,7 @@ describe Eyecare do
 
     it 'is loaded from file if file exists' do
       config_yml = %"
-        alert: 
+        alert:
           message: 'Yadayada'
           timeout: 10
           interval: 1000
@@ -24,13 +29,13 @@ describe Eyecare do
       config_file.write(config_yml)
       config_file.close
 
-      EyecareStub = Eyecare.dup
-      EyecareStub.instance_eval do
+      stub = Eyecare.dup
+      stub.instance_eval do
         @config = nil
         @config_path = config_file.path
       end
 
-      config = EyecareStub.config
+      config = stub.config
 
       config[:alert][:message].wont_be_empty
       config[:alert][:message].must_equal 'Yadayada'

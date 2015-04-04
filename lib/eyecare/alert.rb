@@ -10,19 +10,22 @@ module Eyecare
     attr_accessor :beep
     attr_accessor :icon_path
 
-    DEFAULT_MESSAGE = Config::DEFAULTS[:alert][:message]
-    DEFAULT_TIMEOUT = Config::DEFAULTS[:alert][:timeout]
-    DEFAULT_BEEP_START = File.join(Config::AUDIOS_PATH, 'beep_start.wav')
-    DEFAULT_BEEP_END = File.join(Config::AUDIOS_PATH, 'beep_end.wav')
-    DEFAULT_ICON_PATH = Config::DEFAULTS[:alert][:icon]
+    DEFAULT_MESSAGE     = Config::DEFAULTS[:alert][:message]
+    DEFAULT_TIMEOUT     = Config::DEFAULTS[:alert][:timeout]
+    DEFAULT_BEEP_START  = Config::DEFAULTS[:alert][:beep][:start]
+    DEFAULT_BEEP_END    = Config::DEFAULTS[:alert][:beep][:end]
+    DEFAULT_BEEP_PLAYER = Config::DEFAULTS[:alert][:beep][:player]
+    DEFAULT_ICON_PATH   = Config::DEFAULTS[:alert][:icon]
 
     class Beep
       attr_accessor :start
       attr_accessor :end
+      attr_accessor :player
 
       def initialize(options = {})
-        @start = Eyecare::Audio.new(options[:start])
-        @end = Eyecare::Audio.new(options[:end])
+        @player = options[:player]
+        @start = Eyecare::Audio.new(options[:start], options[:player])
+        @end = Eyecare::Audio.new(options[:end], options[:player])
       end
 
       def play(name)
@@ -37,12 +40,14 @@ module Eyecare
 
       beep_start = DEFAULT_BEEP_START
       beep_end = DEFAULT_BEEP_END
+      beep_player = DEFAULT_BEEP_PLAYER
       if options[:beep]
         beep_start = options[:beep][:start] if options[:beep][:start]
         beep_end = options[:beep][:end] if options[:beep][:end]
+        beep_player = options[:beep][:player] if options[:beep][:player]
       end
 
-      @beep = Beep.new(start: beep_start, end: beep_end)
+      @beep = Beep.new(start: beep_start, end: beep_end, player: beep_player)
       self
     end
 

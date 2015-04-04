@@ -6,6 +6,22 @@ require 'eyecare/daemon'
 require 'fileutils'
 require 'ffi'
 
+class Hash
+  def deep_compact
+    dup.deep_compact!
+  end
+
+  def deep_compact!
+    each do |key, value|
+      if value.respond_to?(:deep_compact)
+        value = value.deep_compact
+        value = nil if value.length == 0
+      end
+      self[key] = value
+    end.compact
+  end
+end
+
 module Eyecare
   extend FFI::Library
   ffi_lib FFI::Library::LIBC
@@ -22,7 +38,7 @@ module Eyecare
     attr_reader :config_path
 
     def run
-      Daemon.start(config[:pid_file]) do 
+      Daemon.start(config[:pid_file]) do
         while true
           seconds = config[:alert][:interval]
           while seconds > 0
@@ -47,14 +63,19 @@ module Eyecare
       return @config if @config
 
       config_file = File.expand_path(config_path)
-      @config = Config.load_from_file(config_file) rescue Config.new
+
+      if File.exists?(config_file) && File.file?(config_file) && File.readable?(config_file)
+        @config = Config.load_from_file(config_file)
+      end
+
+      @config ||= Config.new
     end
 
     private
     def proc_name(name)
       $0 = name
       return false unless self.respond_to?(:prctl)
-   
+
       name = name.slice(0, 16)
       ptr = FFI::MemoryPointer.from_string(name)
       self.prctl(15, ptr.address, 0, 0)

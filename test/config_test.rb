@@ -55,8 +55,8 @@ describe Eyecare::Config do
     %"
       alert:
         message: 'This is a test message'
-        timeout: 
-        interval: 
+        timeout:
+        interval:
         beep:
           start: /path/to/beep/start.wav
           end: /path/to/beep/end.wav
@@ -81,8 +81,8 @@ describe Eyecare::Config do
   end
 
   it 'is malformed' do
-    config = Eyecare::Config.load_from_text('fdaf-fff:fsdafd')
-    assert_default(config) 
+    config = Eyecare::Config.load_from_text(YAML.load('fdaf-fff:fsdafd'))
+    assert_default(config)
   end
 
   it 'is loaded from file' do
@@ -90,7 +90,7 @@ describe Eyecare::Config do
     f = Tempfile.new('config')
     f.write(config_text)
     f.close
-  
+
     config = Eyecare::Config.load_from_file(f.path)
     f.unlink
     config[:alert][:message].wont_be_empty
