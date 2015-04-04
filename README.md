@@ -14,12 +14,12 @@ It is recommended to look away from your screen for 20 seconds every 20 minutes.
 
 The app will run as a daemon and pid file will be saved into ~/.eyecare/eyecare.pid
 To see how much time left till next notification:
-    
+
     $ ps aux | grep Eyecare
 
 
 Create a config file ~/.eyecare/config.yml
-    
+
 Config options are:
 
     alert:
@@ -30,3 +30,4 @@ Config options are:
       beep:
         start: /path/to/audio.wav
         end: /path/to/audio.wav
+        player: 'aplay :file'
