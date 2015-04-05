@@ -5,7 +5,6 @@ require 'active_support/core_ext/hash/compact'
 require 'active_support/core_ext/hash/deep_merge'
 require 'eyecare'
 
-
 module Eyecare
   class Config
     ASSETS_PATH = File.expand_path(File.join(File.dirname(__FILE__), 'assets'))
@@ -19,7 +18,7 @@ module Eyecare
         interval: 20 * 60,
         icon: File.join(IMAGES_PATH, 'eyecare.png'),
         beep: {
-          player: "aplay :file",
+          player: 'aplay :file',
           start: File.join(AUDIOS_PATH, 'beep_start.wav'),
           end: File.join(AUDIOS_PATH, 'beep_end.wav')
         }
@@ -32,19 +31,18 @@ module Eyecare
 
     def initialize(options = {})
       @options = DEFAULTS
-      if options.respond_to?(:deep_symbolize_keys)
-        options = options.deep_symbolize_keys.deep_compact
-        options = parse_duration_values(options)
-        @options = @options.deep_merge(options)
-      end
+      return @options unless options.respond_to?(:deep_symbolize_keys)
+      options = options.deep_symbolize_keys.deep_compact
+      options = parse_duration_values(options)
+      @options = @options.deep_merge(options)
     end
 
     def self.load_from_file(filename)
-      self.new(YAML.load_file(File.open(filename)))
+      new(YAML.load_file(File.open(filename)))
     end
 
     def self.load_from_text(text)
-      self.new(YAML.load(text))
+      new(YAML.load(text))
     end
 
     def [](key)
@@ -52,16 +50,23 @@ module Eyecare
     end
 
     private
+
     def parse_duration_values(options)
-      return options unless options.is_a?(Hash)
-      if options[:alert].is_a?(Hash)
-        [:interval, :timeout].each do |k|
-          if options[:alert][k]
-            options[:alert][k] = ChronicDuration.parse(options[:alert][k]) if options[:alert][k].is_a?(String)
-            options[:alert][k] = options[:alert][k].to_i
-            options[:alert].delete(k) if options[:alert][k] == 0
-          end
-        end
+      return options unless options.is_a?(Hash) && options[:alert].is_a?(Hash)
+      filter_duration_values(options[:alert], [:interval, :timeout])
+      options
+    end
+
+    def filter_duration_value(value)
+      return value.to_i unless value.is_a?(String)
+      ChronicDuration.parse(value).to_i
+    end
+
+    def filter_duration_values(options, keys)
+      keys.each do |k|
+        next unless options[k]
+        options[k] = filter_duration_value(options[k])
+        options.delete(k) if options[k] == 0
       end
       options
     end

@@ -1,4 +1,4 @@
-require "eyecare/version"
+require 'eyecare/version'
 require 'eyecare/alert'
 require 'eyecare/audio'
 require 'eyecare/config'
@@ -6,6 +6,7 @@ require 'eyecare/daemon'
 require 'fileutils'
 require 'ffi'
 
+# Hash
 class Hash
   def deep_compact
     dup.deep_compact!
@@ -22,14 +23,15 @@ class Hash
   end
 end
 
+# Eyecare
 module Eyecare
   extend FFI::Library
   ffi_lib FFI::Library::LIBC
 
   begin
-    attach_function :prctl, [ :ulong, :ulong, :ulong, :ulong ], :int
-  rescue FFI::NotFoundError
-    # We couldn't find the method
+    attach_function :prctl, [:ulong, :ulong, :ulong, :ulong], :int
+  rescue FFI::NotFoundError => e
+    puts e
   end
 
   @config_path = File.expand_path('~/.eyecare/config.yml')
@@ -39,10 +41,12 @@ module Eyecare
 
     def run
       Daemon.start(config[:pid_file]) do
-        while true
+        loop do
           seconds = config[:alert][:interval]
           while seconds > 0
-            proc_name('Eyecare - %s' % ChronicDuration.output(seconds, :format => :short))
+            proc_name(
+              'Eyecare - ' + ChronicDuration.output(seconds, format: :short)
+            )
             seconds -= 1
             sleep(1)
           end
@@ -64,7 +68,8 @@ module Eyecare
 
       config_file = File.expand_path(config_path)
 
-      if File.exists?(config_file) && File.file?(config_file) && File.readable?(config_file)
+      if File.exist?(config_file) && File.file?(config_file) &&
+         File.readable?(config_file)
         @config = Config.load_from_file(config_file)
       end
 
@@ -72,13 +77,14 @@ module Eyecare
     end
 
     private
+
     def proc_name(name)
       $0 = name
       return false unless self.respond_to?(:prctl)
 
       name = name.slice(0, 16)
       ptr = FFI::MemoryPointer.from_string(name)
-      self.prctl(15, ptr.address, 0, 0)
+      prctl(15, ptr.address, 0, 0)
     ensure
       ptr.free if ptr
     end
